@@ -1,0 +1,237 @@
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+
+public class View extends JFrame {
+    JTextField txtIdHect, txtCommunity, txtLatitude, txtLongitude;
+    JComboBox cmbIsRented;
+    JButton btnGet, btnClean, btnSave, btnUpdate, btnDelete, btnShowAll, btnClose;
+    JDialog modal;
+    public View(){
+        super("CRUD HECTARIAS");
+        generateInterface();
+    }
+
+    public void generateInterface() {
+        setSize(750, 500);
+        setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        JTextField txtBusqueda = new JTextField();
+        JButton btnLimpiar = new JButton("Limpiar");
+        Box box = Box.createVerticalBox();
+        JPanel panelTxt = new JPanel();
+        JPanel panelButtons = new JPanel();
+
+        txtIdHect = new JTextField();
+        txtCommunity = new JTextField();
+        txtLatitude = new JTextField();
+        txtLongitude = new JTextField();
+        cmbIsRented = new JComboBox(new String[]{"No", "Si"});
+        btnGet = new JButton("Recuperar");
+        btnClean = new JButton("Limpiar");
+        btnSave = new JButton("Grabar");
+        btnUpdate = new JButton("Modificar");
+        btnUpdate.setEnabled(false);
+        btnDelete = new JButton("Borrar");
+        btnDelete.setEnabled(false);
+        btnShowAll = new JButton("Consultar todo");
+
+        //btnGet.setBackground(new Color(125, 164, 222));
+
+        JLabel title = new JLabel("CRUD HECTARIAS");
+        title.setFont(new Font("Arial", Font.PLAIN, 32));
+
+        Dimension preferredSize = new Dimension(200, 40); // Ancho, Alto
+        txtIdHect.setPreferredSize(preferredSize);
+        txtCommunity.setPreferredSize(preferredSize);
+        txtLatitude.setPreferredSize(preferredSize);
+        txtLongitude.setPreferredSize(preferredSize);
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.005;
+        gbc.insets = new Insets(40, 5, 20, 5);
+        gbc.fill = GridBagConstraints.CENTER;
+        add(title, gbc);
+
+        panelTxt.setLayout(new GridBagLayout());
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 3;
+        gbc.gridheight = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 5, 0, 5);
+        panelTxt.add(new JLabel("Ingrese el id de la Hectaria:"), gbc);
+        gbc.gridy = 1;
+        panelTxt.add(txtIdHect, gbc);
+
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        panelTxt.add(new JLabel("Ingrese la comunidad a la que pertenece la hectaria:"), gbc);
+        gbc.gridy = 1;
+        panelTxt.add(txtCommunity, gbc);
+
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panelTxt.add(new JLabel("Es rentada?"), gbc);
+        gbc.gridy = 3;
+        panelTxt.add(cmbIsRented, gbc);
+
+        gbc.gridy = 2;
+        gbc.gridx = 2;
+        panelTxt.add(new JLabel("Ingrese la latitud:"), gbc);
+        gbc.gridy = 3;
+        panelTxt.add(txtLatitude, gbc);
+
+        gbc.gridx = 4;
+        gbc.gridy = 2;
+        panelTxt.add(new JLabel("Ingrese la longuitud:"), gbc);
+        gbc.gridy = 3;
+        panelTxt.add(txtLongitude, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.gridwidth = 1;
+        gbc.gridheight = 2;
+        gbc.insets = new Insets(10, 50, 10, 50);
+        //panelTxt.setBackground(new Color(168, 19, 19));
+        add(panelTxt, gbc);
+
+        panelButtons.setLayout(new GridLayout(2, 3, 10, 10));
+        panelButtons.add(btnGet);
+        panelButtons.add(btnClean);
+        panelButtons.add(btnSave);
+        panelButtons.add(btnUpdate);
+        panelButtons.add(btnDelete);
+        panelButtons.add(btnShowAll);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        gbc.gridwidth = 4;
+        gbc.gridheight = 1;
+        gbc.weightx = 1.0;
+        gbc.weighty = 0.1;
+        gbc.insets = new Insets(10, 50, 50, 50);
+        gbc.fill = GridBagConstraints.BOTH;
+        add(panelButtons, gbc);
+
+        setVisible(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        this.setLocationRelativeTo(null);
+
+        modal = new JDialog(this, "Hectarias", true);
+        modal.setSize(600, 400);
+        modal.setLayout(new BorderLayout());
+
+        btnClose = new JButton("Close");
+        modal.add(btnClose, BorderLayout.SOUTH);
+    }
+
+    public void modalHectares(ArrayList<Hectare> hectares) {
+
+
+        String[] columnNames = {"Id Hectaria", "Comunidad", "Ranta", "Latitud", "Longuitud"};
+
+        DefaultTableModel modelHectares = new DefaultTableModel();
+        modelHectares.setColumnIdentifiers(columnNames);
+        for (Hectare hectare: hectares) {
+            modelHectares.addRow(new Object[]{
+                    hectare.getIdHectare(),
+                    hectare.getCommunity(),
+                    hectare.isRented() ? "Sí" : "No",
+                    hectare.getLatitude(),
+                    hectare.getLongitude()
+            });
+        }
+        JTable table = new JTable(modelHectares);
+        JScrollPane scrollPane = new JScrollPane(table);
+        modal.add(scrollPane, BorderLayout.CENTER);
+
+
+        modal.setLocationRelativeTo(this);
+        modal.setVisible(true);
+    }
+    public void closeModal(){
+        modal.dispose();
+    }
+    public void setController(Controller controller){
+        cmbIsRented.addActionListener(controller);
+        btnSave.addActionListener(controller);
+        btnDelete.addActionListener(controller);
+        btnUpdate.addActionListener(controller);
+        btnGet.addActionListener(controller);
+        btnClean.addActionListener(controller);
+        btnShowAll.addActionListener(controller);
+        btnClose.addActionListener(controller);
+    }
+
+    public Hectare getHectare(){
+        int idHectare = Integer.parseInt(txtIdHect.getText());;
+        String community = txtCommunity.getText();
+        boolean isRented = cmbIsRented.equals("Si") ? true : false;
+        double latitude = Double.parseDouble(txtLatitude.getText());
+        double longitude = Double.parseDouble(txtLongitude.getText());
+        return new Hectare(idHectare, community, isRented, latitude, longitude);
+    }
+    public void setHectare(Hectare hectare){
+        if (hectare == null) {
+            JOptionPane.showMessageDialog(null, "La hectaria a la que quiere acceder no existe.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        setCommunity(hectare.getCommunity());
+        setIsRented(hectare.isRented());
+        setLatitude(hectare.getLatitude());
+        setLongitude(hectare.getLongitude());
+        btnSave.setEnabled(false);
+        btnUpdate.setEnabled(true);
+        btnDelete.setEnabled(true);
+    }
+
+    public int confirmDelete(){
+        return JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+    }
+
+    public void cleanTxt(){
+        txtIdHect.setText("");
+        txtCommunity.setText("");
+        setIsRented(false);
+        txtLatitude.setText("");
+        txtLongitude.setText("");
+        btnSave.setEnabled(true);
+        btnDelete.setEnabled(false);
+        btnUpdate.setEnabled(false);
+    }
+
+    public int getIdHect() {
+        return Integer.parseInt(txtIdHect.getText());
+    }
+
+    public void setCommunity(String community) {
+        this.txtCommunity.setText(community);
+    }
+    public void setLatitude(double latitude) {
+        this.txtLatitude.setText(String.valueOf(latitude));
+    }
+
+    public void setLongitude(double longitude) {
+        this.txtLongitude.setText(String.valueOf(longitude));
+    }
+
+    public void setIsRented(boolean isRented) {
+        if (isRented){
+            cmbIsRented.setSelectedItem("Si");
+            return;
+        }
+        cmbIsRented.setSelectedItem("No");
+    }
+}
