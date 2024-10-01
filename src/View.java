@@ -9,6 +9,7 @@ public class View extends JFrame {
     JComboBox cmbIsRented;
     JButton btnGet, btnClean, btnSave, btnUpdate, btnDelete, btnShowAll, btnClose;
     JDialog modal;
+    DefaultTableModel modelHectares;
     public View(){
         super("CRUD HECTARIAS");
         generateInterface();
@@ -134,15 +135,16 @@ public class View extends JFrame {
         modal.setLayout(new BorderLayout());
 
         btnClose = new JButton("Close");
+        modelHectares = new DefaultTableModel();
         modal.add(btnClose, BorderLayout.SOUTH);
     }
 
     public void modalHectares(ArrayList<Hectare> hectares) {
 
 
-        String[] columnNames = {"Id Hectaria", "Comunidad", "Ranta", "Latitud", "Longuitud"};
+        String[] columnNames = {"Id Hectaria", "Comunidad", "Renta", "Latitud", "Longuitud"};
 
-        DefaultTableModel modelHectares = new DefaultTableModel();
+        modelHectares.setRowCount(0);
         modelHectares.setColumnIdentifiers(columnNames);
         for (Hectare hectare: hectares) {
             modelHectares.addRow(new Object[]{
@@ -157,13 +159,14 @@ public class View extends JFrame {
         JScrollPane scrollPane = new JScrollPane(table);
         modal.add(scrollPane, BorderLayout.CENTER);
 
-
         modal.setLocationRelativeTo(this);
         modal.setVisible(true);
     }
+
     public void closeModal(){
         modal.dispose();
     }
+
     public void setController(Controller controller){
         cmbIsRented.addActionListener(controller);
         btnSave.addActionListener(controller);
@@ -175,14 +178,89 @@ public class View extends JFrame {
         btnClose.addActionListener(controller);
     }
 
+    public boolean isNumeric(String txt) {
+        try {
+            Integer.parseInt(txt);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public boolean isDecimal(String txt) {
+        try {
+            Double.parseDouble(txt);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    public boolean isValidLength(String txt, int maxLength) {
+        if (txt == null) {
+            return false;
+        }
+        return txt.length() <= maxLength;
+    }
+
+    public boolean isValidRange(String txt, int minNum, int maxNum){
+        double numero = Double.parseDouble(txt);
+        if (numero >= minNum && numero <= maxNum){
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isTxtNotEmpty(){
+        if (txtIdHect.getText().isEmpty() || txtCommunity.getText().isEmpty() || txtLatitude.getText().isEmpty() || txtLongitude.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(null, "No se aceptan vacios", "Vacios", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+        return true;
+    }
+
+
+    public boolean validationBtnSave(){
+        if(!isTxtNotEmpty()){
+            return false;
+        }else if (!isValidLength(txtIdHect.getText().trim(),10)) {
+            JOptionPane.showMessageDialog(null, "La cantidad máxima de caracteres en el ID es 10", "Cantidad maxima de caracteres", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if (!isNumeric(txtIdHect.getText())) {
+            JOptionPane.showMessageDialog(null, "El ID solo acepta datos numéricos", "Datos numéricos", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if (!isValidLength(txtCommunity.getText().trim(),255)) {
+            JOptionPane.showMessageDialog(null, "La cantidad máxima de caracteres en Comunidad es 255", "Cantidad maxima de caracteres", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if(!isDecimal(txtLatitude.getText())) {
+            JOptionPane.showMessageDialog(null, "Solo datos numéricos para Latitud", "Datos numéricos", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if(!isValidRange(txtLatitude.getText(),-90,90)){
+            JOptionPane.showMessageDialog(null, "La latitud está fuera del rango permitido.", "Rango de Latitud", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if(!isDecimal(txtLongitude.getText())) {
+            JOptionPane.showMessageDialog(null, "Solo datos numéricos para Longitud", "Datos numéricos", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else if(!isValidRange(txtLongitude.getText(),-180,180)){
+            JOptionPane.showMessageDialog(null, "La longitud está fuera del rango permitido.", "Rango de Longitud", JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }else{
+            return true;
+        }
+    }
+
     public Hectare getHectare(){
-        int idHectare = Integer.parseInt(txtIdHect.getText());;
+        if (!validationBtnSave()) {
+            return null;
+        }
+        int idHectare = Integer.parseInt(txtIdHect.getText());
         String community = txtCommunity.getText();
-        boolean isRented = cmbIsRented.equals("Si") ? true : false;
+        boolean isRented = cmbIsRented.getSelectedIndex() == 1 ? true : false;
         double latitude = Double.parseDouble(txtLatitude.getText());
         double longitude = Double.parseDouble(txtLongitude.getText());
         return new Hectare(idHectare, community, isRented, latitude, longitude);
     }
+
     public void setHectare(Hectare hectare){
         if (hectare == null) {
             JOptionPane.showMessageDialog(null, "La hectaria a la que quiere acceder no existe.", "Sin resultados", JOptionPane.INFORMATION_MESSAGE);
@@ -212,13 +290,14 @@ public class View extends JFrame {
         btnUpdate.setEnabled(false);
     }
 
-    public int getIdHect() {
-        return Integer.parseInt(txtIdHect.getText());
+    public Integer getIdHect() {
+        return txtIdHect.getText().isEmpty() ? -1: Integer.parseInt(txtIdHect.getText());
     }
 
     public void setCommunity(String community) {
         this.txtCommunity.setText(community);
     }
+
     public void setLatitude(double latitude) {
         this.txtLatitude.setText(String.valueOf(latitude));
     }
@@ -234,4 +313,5 @@ public class View extends JFrame {
         }
         cmbIsRented.setSelectedItem("No");
     }
+
 }
