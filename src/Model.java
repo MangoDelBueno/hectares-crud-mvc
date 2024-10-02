@@ -81,7 +81,7 @@ public class Model {
         }
     }
 
-    public boolean deleleHectare(Hectare hectare) {
+    public boolean deleteHectare(Hectare hectare) {
         String query = "UPDATE Hectares SET validity = 0 WHERE idHectare = ?";
 
         try (PreparedStatement preSta = connection.prepareStatement(query)) {

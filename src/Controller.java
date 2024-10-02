@@ -27,7 +27,7 @@ public class Controller implements ActionListener {
         }
         if (actionEvent.getSource() == view.btnDelete){
             if (view.confirmDelete() == JOptionPane.YES_OPTION) {
-                model.deleleHectare(view.getHectare());
+                model.deleteHectare(view.getHectare());
                 view.cleanTxt();
             }
         }
