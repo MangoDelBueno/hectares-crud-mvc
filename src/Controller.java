@@ -18,7 +18,9 @@ public class Controller implements ActionListener {
             view.setHectare(model.getHectareById(view.getIdHect()));
         }
         if (actionEvent.getSource() == view.btnSave){
-            model.save(view.getHectare());
+            if(!model.save(view.getHectare())){
+                view.showErrorMessage();
+            }
             view.cleanTxt();
         }
         if (actionEvent.getSource() == view.btnUpdate){

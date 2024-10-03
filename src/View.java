@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class View extends JFrame {
@@ -139,21 +141,24 @@ public class View extends JFrame {
         modal.add(btnClose, BorderLayout.SOUTH);
     }
 
-    public void modalHectares(ArrayList<Hectare> hectares) {
-
-
+    public void modalHectares(ResultSet rs) {
         String[] columnNames = {"Id Hectaria", "Comunidad", "Renta", "Latitud", "Longuitud"};
 
         modelHectares.setRowCount(0);
         modelHectares.setColumnIdentifiers(columnNames);
-        for (Hectare hectare: hectares) {
-            modelHectares.addRow(new Object[]{
-                    hectare.getIdHectare(),
-                    hectare.getCommunity(),
-                    hectare.isRented() ? "Sí" : "No",
-                    hectare.getLatitude(),
-                    hectare.getLongitude()
-            });
+
+        try{
+            while (rs.next()){
+                modelHectares.addRow(new Object[]{
+                        rs.getInt("idHectare"),
+                        rs.getString("community"),
+                        rs.getBoolean("isRented") ? "Sí" : "No",
+                        rs.getDouble("latitude"),
+                        rs.getDouble("longitude")
+                });
+            }
+        }catch (SQLException e){
+            System.out.println("Aqui"+e.getMessage());
         }
         JTable table = new JTable(modelHectares);
         JScrollPane scrollPane = new JScrollPane(table);
@@ -277,6 +282,10 @@ public class View extends JFrame {
 
     public int confirmDelete(){
         return JOptionPane.showConfirmDialog(null, "¿Está seguro de que desea continuar?", "Confirmación", JOptionPane.YES_NO_OPTION);
+    }
+
+    public void showErrorMessage(){
+        JOptionPane.showMessageDialog(null, "Ingrese otro ID para grabar.", "ID Existente", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void cleanTxt(){

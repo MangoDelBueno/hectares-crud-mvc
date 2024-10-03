@@ -26,7 +26,7 @@ public class Model {
 
             preSta.executeUpdate();
         } catch (SQLException e) {
-            //System.err.println("Error while inserting Hectare: " + e.getMessage());
+            System.err.println("Error while inserting Hectare: " + e.getMessage());
             return false;
         }
         System.out.println(":D");
@@ -96,24 +96,16 @@ public class Model {
 
     }
 
-    public ArrayList<Hectare> getAllHectares() {
+    public ResultSet getAllHectares() {
         String query = "SELECT * FROM Hectares WHERE validity = 1";
-        ArrayList<Hectare> hectares = new ArrayList<>();
+        ResultSet rs = null;
 
-        try (PreparedStatement preSta = connection.prepareStatement(query)) {
-            ResultSet rs = preSta.executeQuery();
-            while (rs.next()){
-                int id = rs.getInt("idHectare");
-                String community = rs.getString("community");
-                boolean isRented = rs.getBoolean("isRented");
-                double latitude = rs.getDouble("latitude");
-                double longitude = rs.getDouble("longitude");
-
-                hectares.add(new Hectare(id, community, isRented, latitude, longitude));
-            }
+        try {
+            PreparedStatement preSta = connection.prepareStatement(query);
+            rs = preSta.executeQuery();
         } catch (SQLException e) {
             System.err.println("Error while loading Hectares: " + e.getMessage());
         }
-        return hectares;
+        return rs;
     }
 }
