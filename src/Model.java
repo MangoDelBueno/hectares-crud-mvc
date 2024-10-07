@@ -9,6 +9,12 @@ public class Model {
     }
 
     public boolean save(Hectare hectare) {
+        if (hectare == null){
+            return false;
+        }
+        if(getHectareById(hectare.getIdHectare())!=null){
+            return false;
+        }
         String query = "INSERT INTO Hectares (idHectare, community, isRented, latitude, longitude, validity) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement preSta = connection.prepareStatement(query)) {
             preSta.setInt(1, hectare.getIdHectare());
@@ -20,7 +26,7 @@ public class Model {
 
             preSta.executeUpdate();
         } catch (SQLException e) {
-            System.err.println("Error while inserting Hectare: " + e.getMessage());
+            //System.err.println("Error while inserting Hectare: " + e.getMessage());
             return false;
         }
         System.out.println(":D");
@@ -28,6 +34,9 @@ public class Model {
     }
 
     public Hectare getHectareById(int idHectare) {
+        if(idHectare == -1){
+            return null;
+        }
         String query = "SELECT * FROM Hectares WHERE idHectare = ? AND validity = 1";
         try (PreparedStatement preSta = connection.prepareStatement(query)) {
             preSta.setInt(1, idHectare);
@@ -51,7 +60,7 @@ public class Model {
     }
 
     public boolean upadatehectare(Hectare hectare) {
-        if (getHectareById(hectare.getIdHectare()) == null)
+        if (hectare==null || getHectareById(hectare.getIdHectare()) == null)
             return false;
         String query = "UPDATE Hectares SET community = ?, isRented = ?, latitude = ?, longitude = ? WHERE idHectare = ?";
 

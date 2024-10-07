@@ -6,7 +6,6 @@ public class Controller implements ActionListener {
     private Model model;
     private View view;
 
-    Hectare hectaree = new Hectare(11, "La Colorada", false, 24.7550, -107.4800);
     public Controller(Model model, View view){
         this.model = model;
         this.view = view;

@@ -8,7 +8,7 @@ public class ConnectionSingleton {
         String url = "jdbc:sqlserver://localhost:1433;databaseName=MANGODB;encrypt=true;trustServerCertificate=true";
 
         try {
-            coneccion = DriverManager.getConnection(url, "sa", "Monicanv9");
+            coneccion = DriverManager.getConnection(url, "sa", "sql2025");
 
         }catch (Exception e){
             System.out.println(e.getMessage());
